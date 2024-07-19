@@ -2,14 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('login');
-})->name('login');
-
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
+use App\Http\Controllers\UserLoginController;
 
 // ログイン画面
 Route::get('/user-login', [UserLoginController::class, 'create'])->name('user.login');
@@ -24,3 +17,8 @@ Route::middleware('auth:user')->group(function () {
         return view('user.top');
     })->name('user.top');
 });
+
+Route::post('/registration', [UserLoginController::class, 'registration'])->name('user.login.registration');
+Route::get('/user-login', function () {
+    return view('user.login');
+})->name('user.login');

@@ -12,14 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
         $middleware->redirectGuestsTo(function (Request $request) {
-            if (request()->routeIs('admin.*')) {
-                return $request->expectsJson() ? null : route('admin.login');
+            if (request()->routeIs('user.*')) {
+                return $request->expectsJson() ? null : route('user.login');
             }
             return $request->expectsJson() ? null : route('auth');
         });
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
     })->create();
