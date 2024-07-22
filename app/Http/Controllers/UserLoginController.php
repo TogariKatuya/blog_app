@@ -29,7 +29,7 @@ class UserLoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('user.top'));
+        return redirect()->intended(route('top.topdisplay'));
     }
 
     /**

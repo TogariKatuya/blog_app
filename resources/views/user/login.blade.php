@@ -27,12 +27,12 @@
                 @error('failed')
                     <p>{{ $message }}</p>
                 @enderror
-                <button type="submit">ログイン</button>
+                <button type="submit">Login</button>
             </div>
         </form>
 
         <!-- ポップアップを開くボタン -->
-        <button id="openModalBtn">新規登録</button>
+        <button id="openModalBtn">new account</button>
     </main>
 
     <!-- ポップアップのHTMLを読み込む -->
