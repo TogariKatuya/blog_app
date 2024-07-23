@@ -37,6 +37,7 @@ class UserLoginController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        dd($request);
         Auth::guard('user')->logout();
 
         $request->session()->invalidate();

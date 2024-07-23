@@ -18,8 +18,11 @@ class TopController extends Controller
         $sort = $request->input('sort', 'views'); // デフォルトで観覧数でソート
         $query = $request->input('query', '');
 
-        $blogs = Article::where('title', 'like', "%$query%")
-            ->orWhere('contents', 'like', "%$query%")
+        $blogs = Article::where('delete_flag', false)
+            ->where(function ($queryBuilder) use ($query) {
+                $queryBuilder->where('title', 'like', "%$query%")
+                    ->orWhere('contents', 'like', "%$query%");
+            })
             ->orderBy($sort, 'desc')
             ->paginate(10);
 

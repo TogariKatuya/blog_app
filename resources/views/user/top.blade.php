@@ -15,10 +15,9 @@
             <h1>ブログアプリ</h1>
             <nav>
                 <ul>
-                    <li><a href="/create">Blog</a></li>
-                    <li><a href="/search">検索</a></li>
+                    <li><a href="/create">Blog UP</a></li>
                     <li>
-                        <form action="/logout" method="POST" style="display: inline;">
+                        <form action="{{ route('user.login.destroy') }}" method="POST" style="display: inline;">
                             @csrf
                             <button type="submit">ログアウト</button>
                         </form>
@@ -50,8 +49,8 @@
                             <h2>{{ $blog->title }}</h2>
                             <p>{{ Str::limit($blog->contents, 100) }}</p>
                             <div class="actions">
-                                <a href="/view/{{ $blog->id }}">詳細</a>
-                                <a href="/edit/{{ $blog->id }}">編集</a>
+                                <a href="/blog/{{ $blog->id }}">詳細</a>
+                                <a href="/blog/{{ $blog->id }}/edit">編集</a>
                                 <a href="/delete/{{ $blog->id }}">削除</a>
                             </div>
                             <p>観覧数: {{ $blog->views }}</p>
