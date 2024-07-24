@@ -14,9 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(function (Request $request) {
             if (request()->routeIs('user.*')) {
-                return $request->expectsJson() ? null : route('user.login');
+                return $request->expectsJson() ? null : route('top.topdisplay');
             }
-            return $request->expectsJson() ? null : route('auth');
+            return $request->expectsJson() ? null : route('user.login');
         });
     })
     ->withExceptions(function (Exceptions $exceptions) {

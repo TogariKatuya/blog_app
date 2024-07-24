@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>ブログ詳細</title>
     <link rel="stylesheet" href="/css/info.css">
-    <link rel="stylesheet" href="/css/goodbtn.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('../js/good.js') }}"></script>
 </head>
@@ -46,7 +46,9 @@
                     </div>
 
                     <div class="like-section">
-                        <button class="like-button" data-article-id="{{ $blog->id }}">いいね</button>
+                        <button class="like-button" data-article-id="{{ $blog->id }}">
+                            <i class="fa fa-heart"></i>
+                        </button>
                         <span id="like-count">{{ $blog->goods->count() }}</span>
                     </div>
                 </article>

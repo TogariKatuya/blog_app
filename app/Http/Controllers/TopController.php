@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TopController extends Controller
 {
@@ -25,7 +26,7 @@ class TopController extends Controller
             })
             ->orderBy($sort, 'desc')
             ->paginate(10);
-
+        Log::debug('User ID:', ['user_id' => Auth::id()]);
         return view('user.top', ['blogs' => $blogs]);
     }
 }

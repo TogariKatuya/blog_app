@@ -6,16 +6,17 @@ $(document).ready(function () {
         $.ajax({
             url: '/blog/' + articleId + '/like',
             method: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content') // CSRFトークンを含める
+            data: {},
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
             },
             success: function (response) {
                 if (response.status === 'success') {
-                    // 「いいね」数を更新
                     $('#like-count').text(response.likeCount);
-                    alert(response.message);
+                    button.toggleClass('liked'); // 「いいね」状態をトグル
+
                 } else {
-                    alert(response.message);
+
                 }
             },
             error: function (xhr) {

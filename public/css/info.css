@@ -1,3 +1,4 @@
+/* 共通のスタイル */
 * {
     margin: 0;
     padding: 0;
@@ -85,20 +86,7 @@ main {
     margin-bottom: 20px;
 }
 
-.like-section button {
-    background-color: #ff6b6b;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.like-section button:hover {
-    background-color: #ff3b3b;
-}
-
+/* コメントセクション */
 .comments {
     margin-top: 20px;
 }
@@ -156,10 +144,45 @@ main {
     margin-top: 5px;
 }
 
+/* フッター */
 footer {
     text-align: center;
     margin-top: 20px;
     padding: 10px 0;
     background-color: #333;
     color: #fff;
+}
+
+/* いいねボタンのスタイル */
+.like-button {
+    background: none;
+    border: none;
+    color: #ff3b3b;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.like-button .fa-heart {
+    color: #ff3b3b;
+}
+
+.like-button.liked .fa-heart {
+    color: #ccc;
+}
+
+.like-button:hover .fa-heart {
+    color: #ff3b3b;
+}
+
+.like-button:hover {
+    background-color: transparent;
+    /* ボタンの背景色を透明にする */
+    border: none;
+    /* ボタンの境界線を削除 */
+}
+
+.fa-heart {
+    background: none;
+    border: none;
 }

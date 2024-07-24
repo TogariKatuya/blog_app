@@ -31,7 +31,7 @@ class UserLoginRequest extends FormRequest
 
     public function authenticate(): void
     {
-        if (!Auth::guard('user')->attempt($this->only('first_name', 'password'))) {
+        if (!Auth::guard('web')->attempt($this->only('first_name', 'password'))) {
             throw ValidationException::withMessages(['failed' => __('auth.failed')]);
         }
     }
