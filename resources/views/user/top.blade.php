@@ -19,6 +19,7 @@
                     <li>
                         <form action="{{ route('user.login.destroy') }}" method="POST" style="display: inline;">
                             @csrf
+                            @method('DELETE')
                             <button type="submit">ログアウト</button>
                         </form>
                     </li>

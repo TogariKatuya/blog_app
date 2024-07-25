@@ -7,6 +7,7 @@ use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ArticleGood;
 use Illuminate\Support\Facades\Log;
+use League\CommonMark\CommonMarkConverter;
 
 class BlogInfoController extends Controller
 {
@@ -20,6 +21,8 @@ class BlogInfoController extends Controller
     public function show(Request $request, $id)
     {
         $article = Article::with(['user', 'comments.user', 'goods', 'images'])->findOrFail($id);
+        // ビュー数を増加
+        $article->increment('views');
         return view('user.info', ['blog' => $article]);
     }
 
@@ -32,9 +35,6 @@ class BlogInfoController extends Controller
      */
     public function like(Request $request, $id)
     {
-        Log::debug('User ID:', ['user_id' => Auth::id()]);
-        Log::debug('Authenticated:', ['is_authenticated' => Auth::check()]);
-
         $userId = Auth::id();
 
         if ($request->ajax()) {
@@ -129,4 +129,50 @@ class BlogInfoController extends Controller
 
         return redirect()->route('blog.info', ['id' => $id])->with('status', '記事が更新されました！');
     }
+
+    // ブログ作成画面を表示
+    public function create()
+    {
+        return view('user.create');
+    }
+
+    // ブログ保存処理
+    public function store(Request $request)
+    {
+        // バリデーション
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'contents' => 'required|string',
+        ]);
+
+        // マークダウンをHTMLに変換
+        $converter = new CommonMarkConverter();
+        $htmlContents = $converter->convertToHtml($request->input('contents'));
+
+        // 記事の作成
+        $article = new Article([
+            'user_id' => Auth::id(),
+            'title' => $request->input('title'),
+            'contents' => $request->input('contents'),
+            'hash' => substr(md5(uniqid(rand(), true)), 0, 16),
+            'port_stauts_flag' => 1, // 公開状態の初期値
+            'delete_flag' => 0, // 未削除の状態
+            'views' => 0, // 初期観覧数
+        ]);
+
+        // 記事の保存
+        $article->save();
+
+        // 作成完了後のリダイレクト
+        return redirect()->route('top.topdisplay', $article->id)
+            ->with('success', 'ブログ記事を作成しました！');
+    }
+    public function likeStatus(Request $request, $id)
+    {
+        $userId = Auth::id();
+        $liked = ArticleGood::where('article_id', $id)->where('user_id', $userId)->exists();
+
+        return response()->json(['liked' => $liked]);
+    }
 }
+

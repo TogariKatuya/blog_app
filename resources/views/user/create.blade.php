@@ -5,14 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>ブログ編集</title>
-    <link rel="stylesheet" href="/css/top.css">
+    <title>ブログ作成</title>
+    <link rel="stylesheet" href="{{ asset('css/create.css') }}">
+    <script src="{{ asset('js/create.js') }}" defer></script>
 </head>
 
 <body>
     <div class="container">
         <header>
-            <h1>ブログ編集</h1>
+            <h1>ブログ作成</h1>
             <nav>
                 <ul>
                     <li><a href="/user">ホーム</a></li>
@@ -27,21 +28,22 @@
             </nav>
         </header>
         <main>
-            <section class="edit-blog">
-                <h2>記事を編集する</h2>
-                <form action="{{ route('blog.update', $blog->id) }}" method="POST">
+            <section class="create-blog">
+                <h2>新しいブログを作成する</h2>
+                <form id="blogForm" action="{{ route('user.blog.store') }}" method="POST">
                     @csrf
                     <div>
                         <label for="title">タイトル:</label>
-                        <input type="text" name="title" id="title" value="{{ old('title', $blog->title) }}"
-                            required>
+                        <input type="text" name="title" id="title" required>
                     </div>
                     <div>
                         <label for="contents">内容:</label>
-                        <textarea name="contents" id="contents" required>{{ old('contents', $blog->contents) }}</textarea>
+                        <textarea name="contents" id="contents" required></textarea>
                     </div>
-                    <button type="submit">更新する</button>
+                    <button type="submit">投稿する</button>
                 </form>
+                <button type="button" onclick="clearDraft()">下書きをクリア</button>
+                <div class="preview" id="preview"></div>
             </section>
         </main>
         <footer>

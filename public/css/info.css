@@ -157,18 +157,18 @@ footer {
 .like-button {
     background: none;
     border: none;
-    color: #ff3b3b;
+    color: #ccc;
     font-size: 24px;
     cursor: pointer;
     transition: color 0.3s;
 }
 
 .like-button .fa-heart {
-    color: #ff3b3b;
+    color: #ccc;
 }
 
 .like-button.liked .fa-heart {
-    color: #ccc;
+    color: #ff3b3b;
 }
 
 .like-button:hover .fa-heart {

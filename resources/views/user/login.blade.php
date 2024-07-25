@@ -15,6 +15,7 @@
     <main>
         <form method="POST" action="{{ route('user.login.store') }}">
             @csrf
+            @method('')
             <div>
                 <label for="first_name">Name: </label>
                 <input type="text" id="first_name" name="first_name" required />
