@@ -115,19 +115,54 @@ class BlogInfoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // バリデーション
         $request->validate([
             'title' => 'required|string|max:255',
             'contents' => 'required|string',
         ]);
 
+        // 記事を取得
         $article = Article::findOrFail($id);
+        $userId = Auth::id();
 
+        // 認証ユーザーが記事の著者であるか確認
+        if ($article->user_id !== $userId) {
+            return redirect()->route('blog.info', ['id' => $id])->with('error', '更新する権限がありません。');
+        }
+
+        // 記事の更新
         $article->update([
             'title' => $request->input('title'),
             'contents' => $request->input('contents'),
         ]);
 
         return redirect()->route('blog.info', ['id' => $id])->with('status', '記事が更新されました！');
+    }
+
+
+    /**
+     * 記事を削除
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete(Request $request, $id)
+    {
+        // ユーザー認証
+        $userId = Auth::id();
+
+        // 記事を取得
+        $article = Article::where('id', $id)
+            ->where('user_id', $userId) // 自分の投稿のみ削除可能
+            ->firstOrFail();
+
+        // 論理削除フラグを設定
+        $article->update([
+            'delete_flag' => 1,
+        ]);
+
+        return redirect()->route('top.topdisplay')->with('status', '記事が削除されました！');
     }
 
     // ブログ作成画面を表示
@@ -165,7 +200,7 @@ class BlogInfoController extends Controller
 
         // 作成完了後のリダイレクト
         return redirect()->route('top.topdisplay', $article->id)
-            ->with('success', 'ブログ記事を作成しました！');
+            ->with(['success' => 'ブログ記事を作成しました！', 'clearDraft' => true]);
     }
     public function likeStatus(Request $request, $id)
     {

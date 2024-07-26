@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>ブログアプリ</title>
     <link rel="stylesheet" href="css/top.css">
+    <script src="js/create.js"></script>
 </head>
 
 <body>
@@ -51,8 +52,15 @@
                             <p>{{ Str::limit($blog->contents, 100) }}</p>
                             <div class="actions">
                                 <a href="/blog/{{ $blog->id }}">詳細</a>
-                                <a href="/blog/{{ $blog->id }}/edit">編集</a>
-                                <a href="/delete/{{ $blog->id }}">削除</a>
+                                @if (Auth::id() === $blog->user_id)
+                                    <a href="/blog/{{ $blog->id }}/edit">編集</a>
+                                    <form action="{{ route('blog.delete', ['id' => $blog->id]) }}" method="POST"
+                                        style="display: inline;" onsubmit="return confirm('本当にこの記事を削除しますか？')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">削除</button>
+                                    </form>
+                                @endif
                             </div>
                             <p>観覧数: {{ $blog->views }}</p>
                         </article>
@@ -61,6 +69,13 @@
                     <p>ブログ記事はありません。</p>
                 @endif
             </section>
+            @if (session('clearDraft'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        clearDraft();
+                    });
+                </script>
+            @endif
             <section class="pagination">
                 {{ $blogs->links() }}
             </section>

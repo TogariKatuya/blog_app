@@ -43,6 +43,9 @@ Route::middleware(['auth'])->group(function () {
     // 編集処理
     Route::post('/blog/{id}/update', [BlogInfoController::class, 'update'])->name('blog.update');
 
+    // 削除処理
+    Route::delete('/blog/{id}/delete', [BlogInfoController::class, 'delete'])->name('blog.delete');
+
     // ブログ作成画面
     Route::get('/create', [BlogInfoController::class, 'create'])->name('user.create');
 

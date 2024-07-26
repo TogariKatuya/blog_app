@@ -12,7 +12,8 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 800px;
+    /* 最大幅を設定してレスポンシブに */
     margin: 0 auto;
     padding: 20px;
 }
@@ -53,63 +54,57 @@ main {
     margin-top: 20px;
 }
 
-.search, .sort {
+.edit-blog {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-blog h2 {
     margin-bottom: 20px;
 }
 
-.blog-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.edit-blog label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
-.blog-item {
-    background-color: #fff;
+.edit-blog input[type="text"],
+.edit-blog textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
     border: 1px solid #ddd;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.blog-item h2 {
-    margin-bottom: 10px;
-}
-
-.blog-item p {
-    margin-bottom: 10px;
-}
-
-.blog-item .actions {
-    margin-bottom: 10px;
-}
-
-.blog-item .actions a {
-    margin-right: 10px;
-    text-decoration: none;
-    color: #333;
-    background-color: #f4f4f4;
-    padding: 5px 10px;
     border-radius: 5px;
+    font-size: 16px;
+}
+
+.edit-blog textarea {
+    resize: vertical;
+    height: 200px;
+    /* テキストエリアの高さを設定 */
+}
+
+.edit-blog button {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.blog-item .actions a:hover {
-    background-color: #ddd;
+.edit-blog button:hover {
+    background-color: #555;
 }
 
-/* 削除ボタンのスタイル */
-.blog-item .actions .btn-danger {
-    color: #fff;
-    background-color: #d9534f;
-    border: 1px solid #d9534f;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-
-.blog-item .actions .btn-danger:hover {
-    background-color: #c9302c;
-    border-color: #c9302c;
+footer {
+    text-align: center;
+    margin-top: 20px;
 }
 
 .pagination {
@@ -135,9 +130,4 @@ main {
     width: 16px;
     height: 16px;
     vertical-align: middle;
-}
-
-footer {
-    text-align: center;
-    margin-top: 20px;
 }
