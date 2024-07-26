@@ -117,7 +117,7 @@ class BlogInfoController extends Controller
     {
         // バリデーション
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:50',
             'contents' => 'required|string',
         ]);
 
@@ -176,7 +176,7 @@ class BlogInfoController extends Controller
     {
         // バリデーション
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:50',
             'contents' => 'required|string',
         ]);
 
