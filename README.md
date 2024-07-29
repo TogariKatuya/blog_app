@@ -1,66 +1,224 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DockerでLaravel 11のローカル開発環境を構築する
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+このガイドでは、Dockerを使用してLaravel 11のローカル開発環境を構築する手順を説明します。phpMyAdminも含めて、MySQLとNginxもセットアップします。
 
-## About Laravel
+## 環境構築
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### ルートディレクトリを作成する
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+$ mkdir test_laravel
+$ cd test_laravel
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### docker-compose.ymlファイルを作成して編集する
 
-## Learning Laravel
+```bash
+$ touch docker-compose.yml
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+`docker-compose.yml`の内容は以下の通りです。
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```yaml
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+version: '3'
+services:
+  app:
+    container_name: app_laravel  
+    build: ./docker/php
+    volumes:
+      - .:/var/www
+  nginx:
+    image: nginx 
+    container_name: nginx
+    ports:
+      - 8000:80 
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    working_dir: /var/www
+    depends_on:
+      - app
+  db:
+    image: mysql:8.0.36
+    container_name: db
+    environment: 
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: database 
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:  
+      - ./docker/db/data:/var/lib/mysql
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf 
+      - ./docker/db/sql:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+  # phpMyAdmin
+  phpmyadmin:
+    container_name: test_phpmyadmin
+    image: phpmyadmin
+    environment:
+    - PMA_USER=root
+    - PMA_PASSWORD=password
+    ports:
+    - 8080:80
+```
 
-## Laravel Sponsors
+### ルートディレクトリ直下に `docker` と `src` を作成する
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+$ mkdir docker && mkdir src
+```
 
-### Premium Partners
+### `docker` 直下に `php` と `nginx` を作成
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+$ cd docker
+$ mkdir php && mkdir nginx
+```
 
-## Contributing
+### `php` 直下に Dockerfile と php.ini を作成して編集する
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+$ cd php
+$ touch Dockerfile php.ini
+```
 
-## Code of Conduct
+`Dockerfile`の内容は以下の通りです。
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```dockerfile
 
-## Security Vulnerabilities
+FROM php:8.3-fpm
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+RUN apt-get update \
+  && apt-get install -y zlib1g-dev mariadb-client vim libzip-dev \
+  && docker-php-ext-install zip pdo_mysql
 
-## License
+#Composer install
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN php composer-setup.php
+RUN php -r "unlink('composer-setup.php');"
+RUN mv composer.phar /usr/local/bin/composer
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
+ENV COMPOSER_HOME /composer
+
+ENV PATH $PATH:/composer/vendor/bin
+
+
+WORKDIR /var/www
+
+RUN composer global require "laravel/installer"
+```
+
+`php.ini`の内容は以下の通りです。
+
+```ini
+[mysqld]
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+default_authentication_plugin=mysql_native_password
+
+[client]
+default-character-set=utf8mb4
+```
+
+### `nginx` 直下に default.conf を作成して編集する
+
+```bash
+$ cd ../nginx
+$ touch default.conf
+```
+
+`default.conf`の内容は以下の通りです。
+
+```nginx
+server {
+  listen 80;
+  root /var/www/laravel-project/public;
+  index index.php;
+  location / {
+    try_files $uri $uri/ /index.php?$query_string;
+  }
+  location ~ \.php$ {
+    try_files $uri =404;
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass app:9000; 
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+  }
+}
+```
+
+### Docker を起動してコンテナを作る
+
+```bash
+$ cd ..
+$ docker-compose up -d
+```
+
+### コンテナにログインする
+
+```bash
+$ docker-compose exec app bash
+```
+
+### Laravelをインストールする
+
+```bash
+# コンテナ内で
+composer create-project --prefer-dist laravel/laravel laravel-project "11.*"
+```
+
+### .env 設定をする
+
+`laravel-project/.env`ファイルを編集します。
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=password
+```
+
+### マイグレーションを実行する
+
+```bash
+cd laravel-project
+php artisan migrate
+```
+
+### ブラウザでLaravelの表示を確認する
+
+- http://localhost:8000/ にアクセスし、Laravelの画面が表示されればOK
+- http://localhost:8080/ にアクセスし、phpMyAdminが見れればOK
+
+### 権限エラーが出た場合
+
+```bash
+# コンテナ内で
+chown ./storage -R
+```
+
+### .env と .env.example の環境設定をする
+
+```bash
+# .env.example を .env にコピー
+cp .env.example .env
+# キージェネレートする
+php artisan key:generate
+```
+
+### コンテナからログアウト
+
+```bash
+exit
+```
+
+Laravel 11のローカル開発環境がDockerでセットアップされました。
+```
+
