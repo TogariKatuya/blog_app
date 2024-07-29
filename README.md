@@ -4,11 +4,13 @@
 
 ## 環境構築
 
-### ルートディレクトリを作成する
+### プロジェクトをクローンする
+
+まず、リポジトリをクローンしてプロジェクトのディレクトリに移動します。
 
 ```bash
-$ mkdir test_laravel
-$ cd test_laravel
+$ git clone <your-repo-url>
+$ cd <your-project-directory>
 ```
 
 ### docker-compose.ymlファイルを作成して編集する
@@ -20,7 +22,6 @@ $ touch docker-compose.yml
 `docker-compose.yml`の内容は以下の通りです。
 
 ```yaml
-
 version: '3'
 services:
   app:
@@ -63,30 +64,26 @@ services:
     - 8080:80
 ```
 
-### ルートディレクトリ直下に `docker` と `src` を作成する
+### `docker` ディレクトリを作成する
+
+プロジェクトのルートディレクトリに`docker`ディレクトリを作成し、必要なサブディレクトリを作成します。
 
 ```bash
-$ mkdir docker && mkdir src
-```
-
-### `docker` 直下に `php` と `nginx` を作成
-
-```bash
-$ cd docker
-$ mkdir php && mkdir nginx
+$ mkdir -p docker/php docker/nginx docker/db
 ```
 
 ### `php` 直下に Dockerfile と php.ini を作成して編集する
 
+`docker/php`ディレクトリに移動して、`Dockerfile`と`php.ini`を作成します。
+
 ```bash
-$ cd php
+$ cd docker/php
 $ touch Dockerfile php.ini
 ```
 
 `Dockerfile`の内容は以下の通りです。
 
 ```dockerfile
-
 FROM php:8.3-fpm
 
 RUN apt-get update \
@@ -104,7 +101,6 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /composer
 
 ENV PATH $PATH:/composer/vendor/bin
-
 
 WORKDIR /var/www
 
@@ -135,7 +131,7 @@ $ touch default.conf
 ```nginx
 server {
   listen 80;
-  root /var/www/laravel-project/public;
+  root /var/www/public;
   index index.php;
   location / {
     try_files $uri $uri/ /index.php?$query_string;
@@ -155,7 +151,7 @@ server {
 ### Docker を起動してコンテナを作る
 
 ```bash
-$ cd ..
+$ cd ../..
 $ docker-compose up -d
 ```
 
@@ -169,12 +165,12 @@ $ docker-compose exec app bash
 
 ```bash
 # コンテナ内で
-composer create-project --prefer-dist laravel/laravel laravel-project "11.*"
+composer install
 ```
 
 ### .env 設定をする
 
-`laravel-project/.env`ファイルを編集します。
+プロジェクトの`.env`ファイルを編集します。
 
 ```env
 DB_CONNECTION=mysql
@@ -188,7 +184,6 @@ DB_PASSWORD=password
 ### マイグレーションを実行する
 
 ```bash
-cd laravel-project
 php artisan migrate
 ```
 
@@ -201,7 +196,7 @@ php artisan migrate
 
 ```bash
 # コンテナ内で
-chown ./storage -R
+chown -R www-data:www-data ./storage ./bootstrap/cache
 ```
 
 ### .env と .env.example の環境設定をする
