@@ -168,6 +168,7 @@ $ docker-compose exec app bash
 composer install
 ```
 
+
 ### マイグレーションを実行する
 
 ```bash
@@ -193,6 +194,19 @@ chown -R www-data:www-data ./storage ./bootstrap/cache
 cp .env.example .env
 # キージェネレートする
 php artisan key:generate
+```
+
+### .env 設定をする
+
+プロジェクトの`.env`ファイルを編集します。
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=password
 ```
 
 ### コンテナからログアウト
