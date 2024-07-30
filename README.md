@@ -168,19 +168,6 @@ $ docker-compose exec app bash
 composer install
 ```
 
-### .env 設定をする
-
-プロジェクトの`.env`ファイルを編集します。
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=db
-DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=root
-DB_PASSWORD=password
-```
-
 ### マイグレーションを実行する
 
 ```bash

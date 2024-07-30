@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>ブログ編集</title>
     <link rel="stylesheet" href="/css/edit.css">
+    <script src="/js/edit.js" defer></script>
 </head>
 
 <body>
@@ -42,6 +43,7 @@
                     </div>
                     <button type="submit">更新する</button>
                 </form>
+                <div class="preview" id="preview"></div>
             </section>
         </main>
         <footer>
